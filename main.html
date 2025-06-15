@@ -37,6 +37,7 @@
       align-items: center;
       cursor: pointer;
       border: 2px solid #333;
+      user-select: none;
     }
 
     .message {
@@ -59,7 +60,7 @@
     <div id="game" style="display: none;">
       <div class="message"></div>
       <div id="board">
-        <!-- Cells will be created by JS -->
+        <!-- 9 cells inserted via JS -->
       </div>
     </div>
   </div>
@@ -84,40 +85,38 @@
     ];
 
     submitBtn.addEventListener('click', () => {
-      const p1 = player1Input.value.trim();
-      const p2 = player2Input.value.trim();
-      if (p1 && p2) {
-        players = [p1, p2];
-        playerForm.style.display = 'none';
-        gameDiv.style.display = 'block';
-        initBoard();
-        messageDiv.textContent = `${players[currentPlayer]}, you're up`;
-      } else {
-        alert("Please enter names for both players.");
-      }
+      const p1 = player1Input.value.trim() || 'Player1';
+      const p2 = player2Input.value.trim() || 'Player2';
+      players = [p1, p2];
+      currentPlayer = 0;
+      board = Array(9).fill("");
+      playerForm.style.display = 'none';
+      gameDiv.style.display = 'block';
+      initBoard();
+      messageDiv.textContent = `${players[currentPlayer]}, you're up`;
     });
 
     function initBoard() {
       boardDiv.innerHTML = '';
-      board = Array(9).fill("");
+      boardDiv.style.display = 'grid';
+
       for (let i = 0; i < 9; i++) {
         const cell = document.createElement('div');
         cell.classList.add('cell');
-        cell.id = (i + 1).toString(); // IDs from 1 to 9
+        cell.id = (i + 1).toString(); // ID from 1 to 9
         cell.addEventListener('click', () => handleMove(i));
         boardDiv.appendChild(cell);
       }
-      boardDiv.style.display = 'grid';
     }
 
     function handleMove(index) {
       if (board[index] !== "") return;
-      const symbol = currentPlayer === 0 ? 'X' : 'O';
+      const symbol = currentPlayer === 0 ? 'x' : 'o'; // lowercase!
       board[index] = symbol;
       document.getElementById(index + 1).textContent = symbol;
 
       if (checkWin(symbol)) {
-        messageDiv.textContent = `${players[currentPlayer]}, congratulations you won!`;
+        messageDiv.textContent = `${players[currentPlayer]} congratulations you won!`;
         disableBoard();
       } else if (board.every(cell => cell !== "")) {
         messageDiv.textContent = "It's a draw!";
